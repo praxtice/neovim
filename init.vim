@@ -29,6 +29,10 @@ Plug 'itchyny/lightline.vim'
 Plug 'wesQ3/vim-windowswap'
 Plug 'tpope/vim-sensible'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'neomake/neomake'
+Plug 'easymotion/vim-easymotion'
+Plug 'junegunn/goyo.vim'
+
 
 " org mode
 Plug 'jceb/vim-orgmode'
@@ -64,6 +68,14 @@ Plug 'ajh17/Spacegray.vim'
 Plug 'atelierbram/Base2Tone-vim'
 Plug 'colepeters/spacemacs-theme.vim'
 
+" Language Client   
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
+" (Optional) Multi-entry selection UI.
+Plug 'junegunn/fzf'
 " Latex
 "Plug 'coot/atp_vim'
 
@@ -73,6 +85,13 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 " Lisp
 Plug 'l04m33/vlime', {'rtp': '~/.config/nvim/plugged/'}
 Plug 'kovisoft/slimv'
+
+" Haskell
+Plug 'ndmitchell/ghcid', { 'rtp': 'plugins/nvim' }
+" Plug 'parsonsmatt/intero-neovim'
+
+" ReasonML
+Plug 'reasonml-editor/vim-reason-plus'
 
 call plug#end()
 
@@ -88,6 +107,11 @@ set shiftwidth=4
 set smarttab
 set expandtab
 
+" wrap text comfily
+set wrap
+set linebreak
+" set the leader key to \
+nnoremap <Leader> \
 " Always display the status line
 set laststatus=2
 
@@ -106,7 +130,12 @@ if (has("termguicolors"))
 endif
 
 let base16colorspace=256  " Access colors present in 256 colorspace
-colorscheme dracula
+let colors = "Base2Tone_LakeDark Base2Tone_DrawbridgeDark Base2Tone_PoolDark Base2Tone_MeadowDark Base2Tone_SpaceDark"
+" colorscheme Base2Tone_LakeDark
+colorscheme Base2Tone_DrawbridgeDark
+" colorscheme Base2Tone_PoolDark
+" colorscheme Base2Tone_MeadowDark
+" colorscheme Base2Tone_SpaceDark
 
 let g:spacegray_underline_search = 1
 let g:spacegray_italicize_comments = 1
@@ -154,8 +183,12 @@ let g:fzf_colors =
 " explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
 let g:fzf_history_dir = '~/.local/share/fzf-history'
 
+" Language Client Configuration
+let g:LanguageClient_serverCommands = {
+    \ 'reason': ['/absolute/path/to/reason-language-server.exe'],
+    \ }
 
-" Enable filding with spacebar
+" Enable folding with spacebar
 nnoremap <space> za
 
 " Enable split navimgation with Ctr-Direction
@@ -165,7 +198,22 @@ nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 nnoremap <C-n> :NERDTreeToggle<CR>
 
+" Easymotion config    
 
+" <Leader>f{char} to move to {char}
+map  <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+" s{char}{char} to move to {char}{char}
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Move to line
+map <Leader>L <Plug>(easymotion-bd-jk)
+nmap <Leader>L <Plug>(easymotion-overwin-line)
+
+" Move to word
+map  <Leader>w <Plug>(easymotion-bd-w)
+nmap <Leader>w <Plug>(easymotion-overwin-w)
 
 if &compatible
   finish
@@ -180,4 +228,13 @@ if get(g:, 'elite_mode')
     nnoremap <Left> :vertical resize +2<CR>
     nnoremap <Right> :vertical resize -2<CR>
 endif
+
+let g:deoplete#enable_at_startup = 1
+
+" Neomake
+call neomake#configure#automake('rw', 1000)
+
+" Ocaml
+let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
 
